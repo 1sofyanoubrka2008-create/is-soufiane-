@@ -3,43 +3,61 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sofyan Interactive - مرحبا بك</title>
+    <title>Sofyan AI - Interactive</title>
     <style>
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; color: #333; }
         .card { background: white; padding: 40px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); text-align: center; width: 85%; max-width: 400px; }
+        /* ستايل التصويرة الجديدة */
+        .profile-img { width: 100px; height: 100px; border-radius: 50%; object-fit: cover; border: 4px solid #dfe6e9; margin-bottom: 20px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
         h1 { color: #2d3436; font-size: 24px; margin-bottom: 10px; }
         p { color: #636e72; margin-bottom: 25px; }
-        input { width: 100%; padding: 12px; border: 2px solid #dfe6e9; border-radius: 10px; outline: none; transition: border-color 0.3s; box-sizing: border-box; font-size: 16px; }
+        input { width: 100%; padding: 12px; border: 2px solid #dfe6e9; border-radius: 10px; outline: none; transition: border-color 0.3s; box-sizing: border-box; font-size: 16px; margin-bottom: 15px; }
         input:focus { border-color: #0984e3; }
-        button { background-color: #0984e3; color: white; border: none; padding: 12px 25px; border-radius: 10px; margin-top: 20px; cursor: pointer; font-size: 16px; width: 100%; font-weight: bold; }
+        button { background-color: #0984e3; color: white; border: none; padding: 12px 25px; border-radius: 10px; cursor: pointer; font-size: 16px; width: 100%; font-weight: bold; }
         button:hover { background-color: #74b9ff; }
-        #response { margin-top: 20px; font-weight: bold; color: #00b894; height: 24px; }
+        #status { margin-top: 20px; font-weight: bold; color: #00b894; }
     </style>
 </head>
 <body>
     <div class="card">
+        <img src="sofyan.jpg" alt="Sofyan" class="profile-img">
+        
         <h1>Sofyane AI 🤖</h1>
         <p>مرحبا بيك فالموقع ديالي التفاعلي الأول</p>
         <p style="font-size: 14px;">"كتبوا أي كلمة هنا وشوفوا شنو غايوقع"</p>
-        <input type="text" id="userInput" placeholder="اكتب أي كلمة...">
-        <button onclick="checkWord()">إرسال</button>
-        <div id="response"></div>
+        
+        <form id="my-form" action="https://formspree.io/f/mqedovdk" method="POST">
+            <input type="text" name="message" id="userInput" placeholder="اكتب أي كلمة..." required>
+            <button type="submit" id="my-form-button">إرسال</button>
+            <p id="status"></p>
+        </form>
     </div>
 
     <script>
-        function checkWord() {
-            const input = document.getElementById('userInput').value;
-            const responseDiv = document.getElementById('response');
-            
-            if(input.trim() === "") {
-                responseDiv.innerText = "عافاك كتب شي حاجة! 😊";
-                responseDiv.style.color = "#d63031";
+        // كود الجافا سكريبت ما تبدلش
+        var form = document.getElementById("my-form");
+        async function handleSubmit(event) {
+          event.preventDefault();
+          var status = document.getElementById("status");
+          var data = new FormData(event.target);
+          fetch(event.target.action, {
+            method: form.method,
+            body: data,
+            headers: { 'Accept': 'application/json' }
+          }).then(response => {
+            if (response.ok) {
+              status.innerHTML = "سفيان كيقول ليك: الكلمة وصلات للجيمايل بنجاح! ✅";
+              form.reset();
             } else {
-                responseDiv.innerText = "سفيان كيقول ليك: " + input + " وصلات بنجاح! ✅";
-                responseDiv.style.color = "#00b894";
-                alert("شكراً حيت جربتي الموقع ديالي! 🚀");
+              response.json().then(data => {
+                if (Object.hasOwn(data, 'errors')) {
+                  status.innerHTML = data["errors"].map(error => error["message"]).join(", ");
+                } else { status.innerHTML = "أوبس! كاين شي مشكل فـ الإرسال."; }
+              })
             }
+          }).catch(error => { status.innerHTML = "أوبس! كاين شي مشكل فـ الإرسال."; });
         }
+        form.addEventListener("submit", handleSubmit)
     </script>
 </body>
 </html>
